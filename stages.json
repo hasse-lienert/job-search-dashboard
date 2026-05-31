@@ -1,0 +1,57 @@
+{
+  "_readme": "Interview stage enrichment. Keyed by company name — must match the Company column in your Sheet exactly (case-sensitive). Maintained by Claude during day planning and wrap-up when interviews are confirmed. Every human conversation is a round — R1, R2, R3, etc. No Screen/R1 distinction. Valid outcomes: active, rejected, offer, withdrawn.",
+  "_example": {
+    "stage": "R2",
+    "rounds": [
+      { "round": "R1", "date": "2026-01-15", "confirmed": true, "notes": "Recruiter name, format" },
+      { "round": "R2", "date": "2026-01-22", "confirmed": true, "notes": "Interviewer name, format" }
+    ],
+    "outcome": "active"
+  },
+  "companies": {
+    "Twint": {
+      "stage": "R1",
+      "rounds": [
+        { "round": "R1", "date": "2026-02-26", "confirmed": true, "notes": "Thomas Graf (CPO), informal 1:1 auf Deutsch — rejected" }
+      ],
+      "outcome": "rejected"
+    },
+    "Generali": {
+      "stage": "R1",
+      "rounds": [
+        { "round": "R1", "date": "2026-03-17", "confirmed": true, "notes": "Alexandra Bauert + Daria Caliandro, 45 min panel — rejected" }
+      ],
+      "outcome": "rejected"
+    },
+    "Advertima": {
+      "stage": "R1",
+      "rounds": [
+        { "round": "R1", "date": "2026-04-02", "confirmed": true, "notes": "Theo, intro call — withdrawn by candidate (salary gap)" }
+      ],
+      "outcome": "withdrawn"
+    },
+    "Wonderful AI": {
+      "stage": "R3",
+      "rounds": [
+        { "round": "R1", "date": "2026-04-22", "confirmed": true, "notes": "David Gibbon (TA), 30 min — advanced" },
+        { "round": "R2", "date": "2026-05-05", "confirmed": true, "notes": "Dominik + Andreas (FDE), technical session — advanced, Strong Hire" },
+        { "round": "R3", "date": "2026-05-11", "confirmed": true, "notes": "Mathias Diener + Edouard Haegi, case study — rejected" }
+      ],
+      "outcome": "rejected"
+    },
+    "Entyre Group": {
+      "stage": "R1",
+      "rounds": [
+        { "round": "R1", "date": "2026-05-12", "confirmed": true, "notes": "Irina Stogova (Head of Talent), 45 min recruiter screen — rejected before R2" }
+      ],
+      "outcome": "rejected"
+    },
+    "Benetics AI": {
+      "stage": "R1",
+      "rounds": [
+        { "round": "R1", "date": "2026-05-18", "confirmed": true, "notes": "Ferdinand (founder/CEO), 15 min intro call — rejected" }
+      ],
+      "outcome": "rejected"
+    }
+  }
+}

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Search — Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:      #0f172a;
+      --surface: #1e293b;
+      --border:  #334155;
+      --text:    #f1f5f9;
+      --muted:   #94a3b8;
+      --blue:    #3b82f6;
+      --green:   #22c55e;
+      --yellow:  #eab308;
+      --red:     #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      padding: 28px 32px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+    #meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+    button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    button:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+    }
+
+    /* ── Stat cards ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .stat-value { font-size: 30px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+    .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+    .stat-sub   { font-size: 12px; color: var(--muted); }
+    .streak-val { color: var(--green); }
+    .rate-val   { color: var(--blue); }
+
+    /* ── Chart row ── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .chart-wrap { position: relative; height: 210px; }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+    /* ── Bottom row ── */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 14px;
+    }
+
+    /* ── Salary ── */
+    .salary-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .salary-stat-val   { font-size: 16px; font-weight: 700; color: var(--blue); }
+    .salary-stat-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .salary-wrap { position: relative; height: 150px; }
+
+    /* ── Table ── */
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+    }
+    th:hover { color: var(--text); }
+    th.sorted { color: var(--text); }
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.025); }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-applied   { background: rgba(34,197,94,0.12);   color: var(--green); }
+    .badge-declined  { background: rgba(148,163,184,0.08); color: var(--muted); }
+    .badge-pulledout { background: rgba(234,179,8,0.12);   color: var(--yellow); }
+    .stage-tag {
+      display: inline-block;
+      margin-left: 6px;
+      font-size: 10px;
+      color: var(--blue);
+      background: rgba(59,130,246,0.12);
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── States ── */
+    .empty { color: var(--muted); font-size: 12px; padding: 8px 0; }
+    #error-banner {
+      display: none;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: var(--red);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Job Search Dashboard</h1>
+    <div id="meta">Loading…</div>
+  </div>
+  <button onclick="loadData()">↻ Refresh</button>
+</header>
+
+<div id="error-banner"></div>
+
+<!-- Stat cards -->
+<div class="stats-row">
+  <div class="card">
+    <div class="stat-label">Total Applied</div>
+    <div class="stat-value" id="s-total">—</div>
+    <div class="stat-sub" id="s-this-week">— this week</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Active</div>
+    <div class="stat-value" id="s-active">—</div>
+    <div class="stat-sub" id="s-closed">— closed</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">RAV Streak</div>
+    <div class="stat-value streak-val" id="s-streak">—</div>
+    <div class="stat-sub">consecutive weeks ≥ 2</div>
+  </div>
+  <div class="card">
+    <div class="stat-label">Response Rate</div>
+    <div class="stat-value rate-val" id="s-rate">—</div>
+    <div class="stat-sub" id="s-rate-sub">companies with stage data</div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-row">
+  <div class="card">
+    <div class="card-title">Weekly Applications</div>
+    <div class="chart-wrap"><canvas id="chart-weekly"></canvas></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>≥ 3</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>= 2 (RAV min)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>= 1</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--border)"></div>0</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Stage Funnel</div>
+    <div class="chart-wrap"><canvas id="chart-funnel"></canvas></div>
+  </div>
+</div>
+
+<!-- Salary + Table -->
+<div class="bottom-row">
+  <div class="card">
+    <div class="card-title">Applications</div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('company')">Company</th>
+            <th onclick="sortBy('role')">Role</th>
+            <th onclick="sortBy('date')">Applied on</th>
+            <th onclick="sortBy('cw')">KW</th>
+            <th onclick="sortBy('status')">Status</th>
+            <th id="th-salary" onclick="sortBy('salary')">Salary</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card" id="salary-card">
+    <div class="card-title">Salary Anchoring</div>
+    <div class="salary-stats" id="salary-stats">
+      <div class="empty">No salary data yet</div>
+    </div>
+    <div class="salary-wrap"><canvas id="chart-salary"></canvas></div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG — edit these two lines after deploying the Apps Script ────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwpPerNgKreQEC6TZpu4NjaPm6MMF90gJEAqJXmxqSKBPbcmAJTDmVdl9ChxeLaFln/exec';
+const SECRET_KEY = 'job_search_analytics_2026';
+const SHOW_SALARY = new URLSearchParams(window.location.search).has('salary');
+// ─────────────────────────────────────────────────────────────────────────────
+
+const STAGES_URL = '/pipeline/stages.json';
+
+// Column header names from your Sheet (row 1)
+const COL = {
+  company: 'Company',
+  role:    'Job',
+  date:    'Applied on',
+  status:  'Status',
+  cw:      'Kalenderwoche',
+  salary:  'Requested salary',
+};
+
+const STAGE_RANK = { r1: 1, r2: 2, r3: 3, offer: 4 };
+
+let rows       = [];
+let stages     = {};
+let sortState  = { col: 'date', dir: 'desc' };
+let charts     = {};
+
+// ─── Data loading ─────────────────────────────────────────────────────────────
+
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const name = 'cb_' + Math.random().toString(36).slice(2);
+    const script = document.createElement('script');
+    const timer = setTimeout(() => { cleanup(); reject(new Error('Request timed out')); }, 15000);
+    function cleanup() {
+      delete window[name];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      clearTimeout(timer);
+    }
+    window[name] = data => { cleanup(); resolve(data); };
+    script.onerror = () => { cleanup(); reject(new Error('Script load failed — check the Apps Script URL')); };
+    script.src = `${url}&callback=${name}`;
+    document.head.appendChild(script);
+  });
+}
+
+async function loadData() {
+  setMeta('Loading…');
+  hideError();
+
+  try {
+    // Sheet data is required — failure shows error banner
+    const sheet = await jsonp(`${SCRIPT_URL}?key=${SECRET_KEY}`);
+    if (sheet.error) throw new Error(sheet.error);
+
+    // Stages are optional — failure is non-fatal, just uses empty object
+    stages = {};
+    try {
+      const stagesRes = await fetch(STAGES_URL, { cache: 'no-store' });
+      if (stagesRes.ok) {
+        const stagesJson = await stagesRes.json();
+        stages = stagesJson.companies || {};
+      } else {
+        console.warn('stages.json returned', stagesRes.status);
+      }
+    } catch (e) {
+      console.warn('stages.json failed to load:', e.message);
+    }
+
+    rows = sheet.data
+      .map(r => ({
+        company: String(r[COL.company] || '').trim(),
+        role:    String(r[COL.role]    || '').trim(),
+        jd_url:  r['jd_url'] || null,
+        date:    String(r[COL.date]    || '').trim(),
+        status:  String(r[COL.status]  || '').toLowerCase().trim(),
+        cw:      parseCW(r[COL.cw]),
+        salary:  parseSalary(r[COL.salary]),
+      }))
+      .filter(r => r.company);
+
+    render();
+    setMeta('Updated ' + new Date().toLocaleTimeString('de-CH'));
+  } catch (err) {
+    setMeta('Failed to load');
+    showError(err.message);
+    console.error(err);
+  }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function parseCW(val) {
+  if (val === null || val === undefined || val === '') return 0;
+  const n = parseInt(String(val).replace(/\D/g, ''), 10);
+  return isNaN(n) ? 0 : n;
+}
+
+function parseSalary(val) {
+  if (val === null || val === undefined || val === '') return null;
+  const n = Number(val);
+  return isNaN(n) || n === 0 ? null : n;
+}
+
+function currentCW() {
+  const now = new Date();
+  const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+function fmtSalary(n) {
+  if (!n) return '—';
+  return 'CHF ' + Math.round(n) + 'k';
+}
+
+function fmtSalaryK(n) {
+  return 'CHF ' + Math.round(n) + 'k';
+}
+
+function setMeta(msg) { document.getElementById('meta').textContent = msg; }
+function showError(msg) {
+  const el = document.getElementById('error-banner');
+  el.style.display = 'block';
+  el.textContent = 'Error: ' + msg;
+}
+function hideError() { document.getElementById('error-banner').style.display = 'none'; }
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+
+function render() {
+  const cwNow = currentCW();
+
+  // Group by CW, sorted by earliest date in group (handles year boundaries)
+  const byCW = {};
+  rows.forEach(r => {
+    if (!r.cw) return;
+    if (!byCW[r.cw]) byCW[r.cw] = { items: [], minDate: r.date };
+    byCW[r.cw].items.push(r);
+    if (!byCW[r.cw].minDate || r.date < byCW[r.cw].minDate)
+      byCW[r.cw].minDate = r.date;
+  });
+  const sortedCWs = Object.keys(byCW)
+    .map(Number)
+    .sort((a, b) => byCW[a].minDate.localeCompare(byCW[b].minDate));
+
+  // ── Stat cards ──────────────────────────────────────────────────────────────
+  const total    = rows.length;
+  const active   = rows.filter(r => r.status === 'applied').length;
+  const closed   = rows.filter(r => r.status === 'declined' || r.status === 'pulled out').length;
+  const thisWeek = (byCW[cwNow]?.items || []).length;
+
+  document.getElementById('s-total').textContent    = total;
+  document.getElementById('s-active').textContent   = active;
+  document.getElementById('s-closed').textContent   = `${closed} closed`;
+  document.getElementById('s-this-week').textContent =
+    `${thisWeek} this week (KW${cwNow})`;
+
+  // Streak: consecutive weeks (going back from current) with ≥ 2 applications
+  let streak = 0;
+  let w = cwNow;
+  while (w > 0) {
+    const count = (byCW[w]?.items || []).length;
+    if (count >= 2) { streak++; w--; }
+    else break;
+  }
+  document.getElementById('s-streak').textContent = streak + (streak === 1 ? ' wk' : ' wks');
+
+  // Response rate
+  const progressed = Object.keys(stages).length;
+  const rate = total > 0 ? Math.round((progressed / total) * 100) : 0;
+  document.getElementById('s-rate').textContent    = rate + '%';
+  document.getElementById('s-rate-sub').textContent =
+    `${progressed} of ${total} with stage data`;
+
+  renderWeeklyChart(sortedCWs, byCW, cwNow);
+  renderFunnelChart(total);
+  if (SHOW_SALARY) renderSalarySection();
+  renderTable();
+}
+
+function renderWeeklyChart(sortedCWs, byCW, cwNow) {
+  // Fill range from first CW to current CW
+  const minCW = sortedCWs.length > 0 ? sortedCWs[0] : cwNow;
+  const labels = [];
+  const counts = [];
+  const colors = [];
+
+  for (let w = minCW; w <= cwNow; w++) {
+    const count = (byCW[w]?.items || []).length;
+    labels.push('KW ' + w);
+    counts.push(count);
+    colors.push(
+      count >= 3 ? '#22c55e' :
+      count === 2 ? '#eab308' :
+      count === 1 ? '#ef4444' :
+      '#334155'
+    );
+  }
+
+  if (charts.weekly) charts.weekly.destroy();
+  charts.weekly = new Chart(document.getElementById('chart-weekly'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data: counts, backgroundColor: colors, borderRadius: 4 }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.raw} application${ctx.raw !== 1 ? 's' : ''}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: '#334155' },
+          ticks: { color: '#94a3b8', font: { size: 11 } },
+        },
+        y: {
+          grid: { color: '#334155' },
+          ticks: { color: '#94a3b8', stepSize: 1, font: { size: 11 } },
+          min: 0,
+          suggestedMax: 4,
+        },
+      },
+    },
+  });
+}
+
+function renderFunnelChart(total) {
+  const stageCounts = { Applied: total, R1: 0, R2: 0, R3: 0, Offer: 0 };
+
+  Object.values(stages).forEach(co => {
+    const rank = STAGE_RANK[(co.stage || '').toLowerCase()] || 0;
+    if (rank >= 1) stageCounts.R1++;
+    if (rank >= 2) stageCounts.R2++;
+    if (rank >= 3) stageCounts.R3++;
+    if (rank >= 4 || co.outcome === 'offer') stageCounts.Offer++;
+  });
+
+  const stageLabels = ['Applied', 'R1', 'R2', 'R3', 'Offer'];
+  const stageData   = stageLabels.map(s => stageCounts[s]);
+
+  if (charts.funnel) charts.funnel.destroy();
+  charts.funnel = new Chart(document.getElementById('chart-funnel'), {
+    type: 'bar',
+    data: {
+      labels: stageLabels,
+      datasets: [{
+        data: stageData,
+        backgroundColor: '#3b82f6',
+        borderRadius: 4,
+        barThickness: 22,
+      }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: '#334155' },
+          ticks: {
+            color: '#94a3b8',
+            font: { size: 11 },
+            stepSize: 1,
+            callback: v => Number.isInteger(v) ? v : '',
+          },
+          min: 0,
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: '#94a3b8', font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+function renderSalarySection() {
+  const withSalary = rows
+    .filter(r => r.salary !== null)
+    .sort((a, b) => b.salary - a.salary);
+
+  const el = document.getElementById('salary-stats');
+
+  if (withSalary.length === 0) {
+    el.innerHTML = '<div class="empty">No salary data yet</div>';
+    if (charts.salary) { charts.salary.destroy(); charts.salary = null; }
+    return;
+  }
+
+  const vals   = withSalary.map(r => r.salary).sort((a, b) => a - b);
+  const min    = vals[0];
+  const max    = vals[vals.length - 1];
+  const median = vals[Math.floor(vals.length / 2)];
+
+  el.innerHTML = `
+    <div>
+      <div class="salary-stat-val">${fmtSalaryK(min)}</div>
+      <div class="salary-stat-label">Min asked</div>
+    </div>
+    <div>
+      <div class="salary-stat-val">${fmtSalaryK(median)}</div>
+      <div class="salary-stat-label">Median</div>
+    </div>
+    <div>
+      <div class="salary-stat-val">${fmtSalaryK(max)}</div>
+      <div class="salary-stat-label">Max asked</div>
+    </div>
+  `;
+
+  if (charts.salary) charts.salary.destroy();
+  charts.salary = new Chart(document.getElementById('chart-salary'), {
+    type: 'bar',
+    data: {
+      labels: withSalary.map(r => r.company),
+      datasets: [{
+        data: withSalary.map(r => r.salary),
+        backgroundColor: '#3b82f6',
+        borderRadius: 3,
+      }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: '#334155' },
+          ticks: {
+            color: '#94a3b8',
+            font: { size: 10 },
+            callback: v => fmtSalaryK(v),
+          },
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: '#94a3b8', font: { size: 10 } },
+        },
+      },
+    },
+  });
+}
+
+function renderTable() {
+  const sorted = [...rows].sort((a, b) => {
+    let va = a[sortState.col] ?? '';
+    let vb = b[sortState.col] ?? '';
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    if (va < vb) return sortState.dir === 'asc' ? -1 : 1;
+    if (va > vb) return sortState.dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  document.getElementById('tbody').innerHTML = sorted.map(r => {
+    const stage    = stages[r.company]?.stage || '';
+    const roleCell = r.jd_url
+      ? `<a href="${escHtml(r.jd_url)}" target="_blank" rel="noopener">${escHtml(r.role)}</a>`
+      : escHtml(r.role);
+    const stageBadge = stage
+      ? `<span class="stage-tag">${escHtml(stage)}</span>`
+      : '';
+    const statusBadge =
+      r.status === 'applied'    ? `<span class="badge badge-applied">Applied</span>` :
+      r.status === 'declined'   ? `<span class="badge badge-declined">Declined</span>` :
+      r.status === 'pulled out' ? `<span class="badge badge-pulledout">Pulled out</span>` :
+                                  `<span class="badge badge-declined">${escHtml(r.status)}</span>`;
+
+    return `<tr>
+      <td>${escHtml(r.company)}${stageBadge}</td>
+      <td>${roleCell}</td>
+      <td>${escHtml(r.date)}</td>
+      <td>${r.cw ? 'KW ' + r.cw : '—'}</td>
+      <td>${statusBadge}</td>
+      ${SHOW_SALARY ? `<td>${fmtSalary(r.salary)}</td>` : ''}
+    </tr>`;
+  }).join('');
+
+  // Update sorted-column highlight
+  document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+  const thIndex = ['company','role','date','cw','status','salary'].indexOf(sortState.col);
+  const ths = document.querySelectorAll('th');
+  if (thIndex >= 0 && ths[thIndex]) ths[thIndex].classList.add('sorted');
+}
+
+function sortBy(col) {
+  sortState = sortState.col === col
+    ? { col, dir: sortState.dir === 'asc' ? 'desc' : 'asc' }
+    : { col, dir: 'asc' };
+  renderTable();
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Apply salary visibility mode
+if (!SHOW_SALARY) {
+  document.getElementById('salary-card').style.display = 'none';
+  document.getElementById('th-salary').style.display = 'none';
+  document.querySelector('.bottom-row').style.gridTemplateColumns = '1fr';
+}
+
+loadData();
+
+// Resize all charts when tab visibility changes or container is resized
+// (fixes funnel collapsing when browser sidebar is toggled)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    Object.values(charts).forEach(c => c && c.resize());
+  }
+});
+new ResizeObserver(() => {
+  Object.values(charts).forEach(c => c && c.resize());
+}).observe(document.body);
+</script>
+</body>
+</html>

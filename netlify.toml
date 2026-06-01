@@ -1,10 +1,14 @@
 [build]
   publish = "."
 
-# Proxy the Apps Script request through Netlify so iOS Safari doesn't block it
-# (Safari ITP treats dynamic <script> tags from google.com as cross-site tracking)
+[build.environment]
+  NODE_VERSION = "18"
+
+# Route /api/data to the serverless function that proxies Apps Script.
+# The direct Netlify proxy redirect (status=200) doesn't work because Apps Script
+# uses a multi-step redirect chain that Netlify's proxy can't follow reliably.
 [[redirects]]
-  from = "/api/data"
-  to   = "https://script.google.com/macros/s/AKfycbwwpPerNgKreQEC6TZpu4NjaPm6MMF90gJEAqJXmxqSKBPbcmAJTDmVdl9ChxeLaFln/exec"
+  from   = "/api/data"
+  to     = "/.netlify/functions/data"
   status = 200
   force  = true

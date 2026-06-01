@@ -165,6 +165,18 @@
     a { color: var(--blue); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      body { padding: 16px; }
+
+      .stats-row  { grid-template-columns: repeat(2, 1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+      .bottom-row { grid-template-columns: 1fr; }
+
+      .stat-value { font-size: 24px; }
+      .legend     { flex-wrap: wrap; gap: 10px; }
+    }
+
     /* ── States ── */
     .empty { color: var(--muted); font-size: 12px; padding: 8px 0; }
     #error-banner {

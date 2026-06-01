@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Search — Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -164,6 +165,13 @@
 
     a { color: var(--blue); text-decoration: none; }
     a:hover { text-decoration: underline; }
+
+    /* ── Grid item overflow fix ──
+       Grid children default to min-width:auto, letting them grow wider than
+       their track. Setting min-width:0 forces them to respect the track width
+       so overflow-x:auto on .table-scroll actually contains the table. */
+    .charts-row > .card,
+    .bottom-row  > .card { min-width: 0; }
 
     /* ── Responsive ── */
     @media (max-width: 640px) {

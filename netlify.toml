@@ -1,2 +1,10 @@
 [build]
   publish = "."
+
+# Proxy the Apps Script request through Netlify so iOS Safari doesn't block it
+# (Safari ITP treats dynamic <script> tags from google.com as cross-site tracking)
+[[redirects]]
+  from = "/api/data"
+  to   = "https://script.google.com/macros/s/AKfycbwwpPerNgKreQEC6TZpu4NjaPm6MMF90gJEAqJXmxqSKBPbcmAJTDmVdl9ChxeLaFln/exec"
+  status = 200
+  force  = true

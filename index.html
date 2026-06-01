@@ -264,7 +264,7 @@
 
 <script>
 // ─── CONFIG — edit these two lines after deploying the Apps Script ────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwpPerNgKreQEC6TZpu4NjaPm6MMF90gJEAqJXmxqSKBPbcmAJTDmVdl9ChxeLaFln/exec';
+const SCRIPT_URL = '/api/data'; // proxied via Netlify — see netlify.toml
 const SECRET_KEY = 'job_search_analytics_2026';
 const SHOW_SALARY = new URLSearchParams(window.location.search).has('salary');
 // ─────────────────────────────────────────────────────────────────────────────
@@ -313,7 +313,9 @@ async function loadData() {
 
   try {
     // Sheet data is required — failure shows error banner
-    const sheet = await jsonp(`${SCRIPT_URL}?key=${SECRET_KEY}`);
+    const res = await fetch(`${SCRIPT_URL}?key=${SECRET_KEY}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const sheet = await res.json();
     if (sheet.error) throw new Error(sheet.error);
 
     // Stages are optional — failure is non-fatal, just uses empty object

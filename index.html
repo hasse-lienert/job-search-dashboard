@@ -185,6 +185,27 @@
       .legend     { flex-wrap: wrap; gap: 10px; }
     }
 
+    /* ── Skeleton loader ── */
+    @keyframes skeleton-shimmer {
+      0%   { background-position:  200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .skeleton-block {
+      display: inline-block;
+      height: 1em;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--border) 25%, #475569 50%, var(--border) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-shimmer 1.5s ease-in-out infinite;
+      vertical-align: middle;
+    }
+    body.is-loading .chart-wrap {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-shimmer 1.5s ease-in-out infinite;
+      border-radius: 4px;
+    }
+
     /* ── States ── */
     .empty { color: var(--muted); font-size: 12px; padding: 8px 0; }
     #error-banner {
@@ -224,14 +245,14 @@
     <div class="stat-sub" id="s-closed">— closed</div>
   </div>
   <div class="card">
-    <div class="stat-label">RAV Streak</div>
+    <div class="stat-label">Weekly Streak</div>
     <div class="stat-value streak-val" id="s-streak">—</div>
-    <div class="stat-sub">consecutive weeks ≥ 2</div>
+    <div class="stat-sub">Weeks with ≥ 2 applications</div>
   </div>
   <div class="card">
-    <div class="stat-label">Response Rate</div>
+    <div class="stat-label">Interview Rate</div>
     <div class="stat-value rate-val" id="s-rate">—</div>
-    <div class="stat-sub" id="s-rate-sub">companies with stage data</div>
+    <div class="stat-sub" id="s-rate-sub">— with conversations</div>
   </div>
 </div>
 
@@ -242,7 +263,7 @@
     <div class="chart-wrap"><canvas id="chart-weekly"></canvas></div>
     <div class="legend">
       <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>≥ 3</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>= 2 (RAV min)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>= 2</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>= 1</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--border)"></div>0</div>
     </div>
@@ -264,7 +285,7 @@
             <th onclick="sortBy('company')">Company</th>
             <th onclick="sortBy('role')">Role</th>
             <th onclick="sortBy('date')">Applied on</th>
-            <th onclick="sortBy('cw')">KW</th>
+            <th onclick="sortBy('cw')">CW</th>
             <th onclick="sortBy('status')">Status</th>
             <th id="th-salary" onclick="sortBy('salary')">Salary</th>
           </tr>
@@ -330,6 +351,23 @@ function jsonp(url) {
 async function loadData() {
   setMeta('Loading…');
   hideError();
+  document.body.classList.add('is-loading');
+
+  // Skeleton stat values
+  ['s-total','s-active','s-streak','s-rate'].forEach(id => {
+    document.getElementById(id).innerHTML =
+      '<span class="skeleton-block" style="width:48px">&nbsp;</span>';
+  });
+  ['s-this-week','s-closed','s-rate-sub'].forEach(id => {
+    document.getElementById(id).innerHTML =
+      '<span class="skeleton-block" style="width:80px;height:0.85em">&nbsp;</span>';
+  });
+
+  // Skeleton table rows
+  const skRow = `<tr>${['90px','130px','75px','28px','60px'].map(w =>
+    `<td><span class="skeleton-block" style="width:${w}">&nbsp;</span></td>`
+  ).join('')}</tr>`;
+  document.getElementById('tbody').innerHTML = Array(5).fill(skRow).join('');
 
   try {
     // Sheet data is required — failure shows error banner
@@ -370,6 +408,8 @@ async function loadData() {
     setMeta('Failed to load');
     showError(err.message);
     console.error(err);
+  } finally {
+    document.body.classList.remove('is-loading');
   }
 }
 
@@ -441,7 +481,7 @@ function render() {
   document.getElementById('s-active').textContent   = active;
   document.getElementById('s-closed').textContent   = `${closed} closed`;
   document.getElementById('s-this-week').textContent =
-    `${thisWeek} this week (KW${cwNow})`;
+    `${thisWeek} this week (CW${cwNow})`;
 
   // Streak: consecutive weeks (going back from current) with ≥ 2 applications
   let streak = 0;
@@ -458,7 +498,7 @@ function render() {
   const rate = total > 0 ? Math.round((progressed / total) * 100) : 0;
   document.getElementById('s-rate').textContent    = rate + '%';
   document.getElementById('s-rate-sub').textContent =
-    `${progressed} of ${total} with stage data`;
+    `${progressed} of ${total} with conversations`;
 
   renderWeeklyChart(sortedCWs, byCW, cwNow);
   renderFunnelChart(total);
@@ -475,7 +515,7 @@ function renderWeeklyChart(sortedCWs, byCW, cwNow) {
 
   for (let w = minCW; w <= cwNow; w++) {
     const count = (byCW[w]?.items || []).length;
-    labels.push('KW ' + w);
+    labels.push('CW ' + w);
     counts.push(count);
     colors.push(
       count >= 3 ? '#22c55e' :
@@ -659,14 +699,14 @@ function renderTable() {
     const statusBadge =
       r.status === 'applied'    ? `<span class="badge badge-applied">Applied</span>` :
       r.status === 'declined'   ? `<span class="badge badge-declined">Declined</span>` :
-      r.status === 'pulled out' ? `<span class="badge badge-pulledout">Pulled out</span>` :
+      r.status === 'pulled out' ? `<span class="badge badge-pulledout">Withdrawn</span>` :
                                   `<span class="badge badge-declined">${escHtml(r.status)}</span>`;
 
     return `<tr>
       <td>${escHtml(r.company)}${stageBadge}</td>
       <td>${roleCell}</td>
       <td>${escHtml(r.date)}</td>
-      <td>${r.cw ? 'KW ' + r.cw : '—'}</td>
+      <td>${r.cw ? 'CW ' + r.cw : '—'}</td>
       <td>${statusBadge}</td>
       ${SHOW_SALARY ? `<td>${fmtSalary(r.salary)}</td>` : ''}
     </tr>`;

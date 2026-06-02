@@ -1,15 +1,18 @@
 // Proxies the Google Apps Script request server-side.
-// This avoids iOS Safari's ITP, which blocks dynamic cross-origin script loads
-// from google.com domains. The browser calls /.netlify/functions/data (same origin)
-// and this function fetches from Apps Script with full redirect-following.
+// Key is stored as a Netlify environment variable (APPS_SCRIPT_KEY) —
+// never exposed to the browser or network requests.
 
 const APPS_SCRIPT_URL =
   'https://script.google.com/macros/s/AKfycbwwpPerNgKreQEC6TZpu4NjaPm6MMF90gJEAqJXmxqSKBPbcmAJTDmVdl9ChxeLaFln/exec';
 
-exports.handler = async (event) => {
-  const key = (event.queryStringParameters || {}).key;
+exports.handler = async () => {
+  const key = process.env.APPS_SCRIPT_KEY;
   if (!key) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Missing key' }) };
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Server misconfigured — APPS_SCRIPT_KEY not set' }),
+    };
   }
 
   try {

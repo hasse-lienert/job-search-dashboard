@@ -305,7 +305,6 @@
 
 <script>
 const SCRIPT_URL  = '/api/data';
-const SECRET_KEY  = 'job_search_analytics_2026';
 const SHOW_SALARY = new URLSearchParams(window.location.search).has('salary');
 
 const STAGES_URL = '/pipeline/stages.json';
@@ -352,7 +351,7 @@ async function loadData() {
 
   try {
     // Sheet data is required — failure shows error banner
-    const res = await fetch(`${SCRIPT_URL}?key=${SECRET_KEY}`);
+    const res = await fetch(SCRIPT_URL);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const sheet = await res.json();
     if (sheet.error) throw new Error(sheet.error);

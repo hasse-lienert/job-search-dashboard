@@ -380,7 +380,7 @@ async function loadData() {
         cw:      parseCW(r[COL.cw]),
         salary:  parseSalary(r[COL.salary]),
       }))
-      .filter(r => r.company);
+      .filter(r => r.company && r.date && r.status);
 
     render();
     setMeta('Updated ' + new Date().toLocaleTimeString('de-CH'));

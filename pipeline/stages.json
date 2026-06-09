@@ -50,6 +50,13 @@
         { "round": "R1", "date": "2026-06-05", "confirmed": true }
       ],
       "outcome": "active"
+    },
+    "Founderful": {
+      "stage": "R1",
+      "rounds": [
+        { "round": "R1", "date": "2026-06-09", "confirmed": true }
+      ],
+      "outcome": "active"
     }
   }
 }

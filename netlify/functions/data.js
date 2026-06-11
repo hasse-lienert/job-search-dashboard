@@ -22,9 +22,25 @@ exports.handler = async () => {
     );
     const body = await upstream.text();
 
+    // Apps Script serves an HTML login/error page when deployment access is
+    // misconfigured — surface that clearly instead of passing HTML as JSON.
+    if (body.trimStart().startsWith('<')) {
+      return {
+        statusCode: 502,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          error: 'Apps Script returned HTML instead of JSON — check the deployment is set to "Execute as: Me" with "Anyone" access',
+        }),
+      };
+    }
+
     return {
       statusCode: upstream.ok ? 200 : upstream.status,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        // Let Netlify's CDN absorb repeat loads for 5 minutes
+        'Cache-Control': 'public, max-age=300',
+      },
       body,
     };
   } catch (err) {

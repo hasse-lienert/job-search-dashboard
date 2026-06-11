@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Search — Dashboard</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+          integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g"
+          crossorigin="anonymous"></script>
   <style>
     :root {
       --bg:      #0f172a;
@@ -51,6 +53,7 @@
       transition: color 0.15s, border-color 0.15s;
     }
     button:hover { color: var(--text); border-color: var(--muted); }
+    button:disabled { opacity: 0.5; cursor: default; }
 
     /* ── Cards ── */
     .card {
@@ -227,7 +230,7 @@
     <h1>Job Search Dashboard</h1>
     <div id="meta">Loading…</div>
   </div>
-  <button onclick="loadData()">↻ Refresh</button>
+  <button id="refresh-btn" onclick="loadData()">↻ Refresh</button>
 </header>
 
 <div id="error-banner"></div>
@@ -321,6 +324,16 @@ const COL = {
 
 const STAGE_RANK = { r1: 1, r2: 2, r3: 3, offer: 4 };
 
+// Single source of truth for chart colors — keep in sync with the CSS :root vars
+const COLORS = {
+  green:  COLORS.green,
+  yellow: COLORS.yellow,
+  red:    COLORS.red,
+  blue:   COLORS.blue,
+  border: COLORS.border,
+  muted:  COLORS.muted,
+};
+
 let rows       = [];
 let stages     = {};
 let sortState  = { col: 'date', dir: 'desc' };
@@ -329,6 +342,10 @@ let charts     = {};
 // ─── Data loading ─────────────────────────────────────────────────────────────
 
 async function loadData() {
+  const refreshBtn = document.getElementById('refresh-btn');
+  if (refreshBtn.disabled) return;
+  refreshBtn.disabled = true;
+
   setMeta('Loading…');
   hideError();
   document.body.classList.add('is-loading');
@@ -374,7 +391,7 @@ async function loadData() {
       .map(r => ({
         company: String(r[COL.company] || '').trim(),
         role:    String(r[COL.role]    || '').trim(),
-        jd_url:  r['jd_url'] || null,
+        jd_url:  /^https?:\/\//.test(r['jd_url'] || '') ? r['jd_url'] : null,
         date:    String(r[COL.date]    || '').trim(),
         status:  String(r[COL.status]  || '').toLowerCase().trim(),
         cw:      parseCW(r[COL.cw]),
@@ -390,6 +407,7 @@ async function loadData() {
     console.error(err);
   } finally {
     document.body.classList.remove('is-loading');
+    refreshBtn.disabled = false;
   }
 }
 
@@ -417,11 +435,7 @@ function currentCW() {
 }
 
 function fmtSalary(n) {
-  if (!n) return '—';
-  return 'CHF ' + Math.round(n) + 'k';
-}
-
-function fmtSalaryK(n) {
+  if (n === null || n === undefined) return '—';
   return 'CHF ' + Math.round(n) + 'k';
 }
 
@@ -473,8 +487,15 @@ function render() {
   }
   document.getElementById('s-streak').textContent = streak + (streak === 1 ? ' wk' : ' wks');
 
-  // Response rate
-  const progressed = Object.keys(stages).length;
+  // Interview rate — only count stage entries that match an actual Sheet row,
+  // so the rate stays consistent with the table badges. Warn on mismatches
+  // (usually a key typo, e.g. "Sygnum" vs "Sygnum Bank").
+  const matchedStages = Object.keys(stages).filter(name => {
+    const matched = rows.some(r => r.company === name);
+    if (!matched) console.warn(`stages.json company "${name}" matches no Sheet row — key typo?`);
+    return matched;
+  });
+  const progressed = matchedStages.length;
   const rate = total > 0 ? Math.round((progressed / total) * 100) : 0;
   document.getElementById('s-rate').textContent    = rate + '%';
   document.getElementById('s-rate-sub').textContent =
@@ -498,10 +519,10 @@ function renderWeeklyChart(sortedCWs, byCW, cwNow) {
     labels.push('CW ' + w);
     counts.push(count);
     colors.push(
-      count >= 3 ? '#22c55e' :
-      count === 2 ? '#eab308' :
-      count === 1 ? '#ef4444' :
-      '#334155'
+      count >= 3 ? COLORS.green :
+      count === 2 ? COLORS.yellow :
+      count === 1 ? COLORS.red :
+      COLORS.border
     );
   }
 
@@ -525,12 +546,12 @@ function renderWeeklyChart(sortedCWs, byCW, cwNow) {
       },
       scales: {
         x: {
-          grid: { color: '#334155' },
-          ticks: { color: '#94a3b8', font: { size: 11 } },
+          grid: { color: COLORS.border },
+          ticks: { color: COLORS.muted, font: { size: 11 } },
         },
         y: {
-          grid: { color: '#334155' },
-          ticks: { color: '#94a3b8', precision: 0, font: { size: 11 } },
+          grid: { color: COLORS.border },
+          ticks: { color: COLORS.muted, precision: 0, font: { size: 11 } },
           min: 0,
           suggestedMax: Math.max(4, ...counts),
         },
@@ -560,7 +581,7 @@ function renderFunnelChart(total) {
       labels: stageLabels,
       datasets: [{
         data: stageData,
-        backgroundColor: '#3b82f6',
+        backgroundColor: COLORS.blue,
         borderRadius: 4,
         barThickness: 22,
       }],
@@ -572,9 +593,9 @@ function renderFunnelChart(total) {
       plugins: { legend: { display: false } },
       scales: {
         x: {
-          grid: { color: '#334155' },
+          grid: { color: COLORS.border },
           ticks: {
-            color: '#94a3b8',
+            color: COLORS.muted,
             font: { size: 11 },
             stepSize: 1,
             callback: v => Number.isInteger(v) ? v : '',
@@ -583,7 +604,7 @@ function renderFunnelChart(total) {
         },
         y: {
           grid: { display: false },
-          ticks: { color: '#94a3b8', font: { size: 11 } },
+          ticks: { color: COLORS.muted, font: { size: 11 } },
         },
       },
     },
@@ -606,19 +627,20 @@ function renderSalarySection() {
   const vals   = withSalary.map(r => r.salary).sort((a, b) => a - b);
   const min    = vals[0];
   const max    = vals[vals.length - 1];
-  const median = vals[Math.floor(vals.length / 2)];
+  const mid    = Math.floor(vals.length / 2);
+  const median = vals.length % 2 ? vals[mid] : (vals[mid - 1] + vals[mid]) / 2;
 
   el.innerHTML = `
     <div>
-      <div class="salary-stat-val">${fmtSalaryK(min)}</div>
+      <div class="salary-stat-val">${fmtSalary(min)}</div>
       <div class="salary-stat-label">Min asked</div>
     </div>
     <div>
-      <div class="salary-stat-val">${fmtSalaryK(median)}</div>
+      <div class="salary-stat-val">${fmtSalary(median)}</div>
       <div class="salary-stat-label">Median</div>
     </div>
     <div>
-      <div class="salary-stat-val">${fmtSalaryK(max)}</div>
+      <div class="salary-stat-val">${fmtSalary(max)}</div>
       <div class="salary-stat-label">Max asked</div>
     </div>
   `;
@@ -630,7 +652,7 @@ function renderSalarySection() {
       labels: withSalary.map(r => r.company),
       datasets: [{
         data: withSalary.map(r => r.salary),
-        backgroundColor: '#3b82f6',
+        backgroundColor: COLORS.blue,
         borderRadius: 3,
       }],
     },
@@ -641,16 +663,16 @@ function renderSalarySection() {
       plugins: { legend: { display: false } },
       scales: {
         x: {
-          grid: { color: '#334155' },
+          grid: { color: COLORS.border },
           ticks: {
-            color: '#94a3b8',
+            color: COLORS.muted,
             font: { size: 10 },
-            callback: v => fmtSalaryK(v),
+            callback: v => fmtSalary(v),
           },
         },
         y: {
           grid: { display: false },
-          ticks: { color: '#94a3b8', font: { size: 10 } },
+          ticks: { color: COLORS.muted, font: { size: 10 } },
         },
       },
     },

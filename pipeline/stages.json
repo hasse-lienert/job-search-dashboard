@@ -57,6 +57,13 @@
         { "round": "R1", "date": "2026-06-09", "confirmed": true }
       ],
       "outcome": "active"
+    },
+    "ELCA": {
+      "stage": "R1",
+      "rounds": [
+        { "round": "R1", "date": "2026-06-19", "confirmed": true }
+      ],
+      "outcome": "active"
     }
   }
 }

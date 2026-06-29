@@ -64,6 +64,20 @@
         { "round": "R1", "date": "2026-06-19", "confirmed": true }
       ],
       "outcome": "active"
+    },
+    "Movec": {
+      "stage": "R1",
+      "rounds": [
+        { "round": "R1", "date": "2026-06-30", "confirmed": true }
+      ],
+      "outcome": "active"
+    },
+    "Brack": {
+      "stage": "R1",
+      "rounds": [
+        { "round": "R1", "date": "2026-07-03", "confirmed": true }
+      ],
+      "outcome": "active"
     }
   }
 }

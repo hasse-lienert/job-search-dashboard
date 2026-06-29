@@ -3,79 +3,131 @@
     "Twint": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-02-26", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-02-26",
+          "confirmed": true
+        }
       ],
       "outcome": "rejected"
     },
     "Generali": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-03-17", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-03-17",
+          "confirmed": true
+        }
       ],
       "outcome": "rejected"
     },
     "Advertima": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-04-02", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-04-02",
+          "confirmed": true
+        }
       ],
       "outcome": "withdrawn"
     },
     "Wonderful AI": {
       "stage": "R3",
       "rounds": [
-        { "round": "R1", "date": "2026-04-22", "confirmed": true },
-        { "round": "R2", "date": "2026-05-05", "confirmed": true },
-        { "round": "R3", "date": "2026-05-11", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-04-22",
+          "confirmed": true
+        },
+        {
+          "round": "R2",
+          "date": "2026-05-05",
+          "confirmed": true
+        },
+        {
+          "round": "R3",
+          "date": "2026-05-11",
+          "confirmed": true
+        }
       ],
       "outcome": "rejected"
     },
     "Entyre Group": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-05-12", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-05-12",
+          "confirmed": true
+        }
       ],
       "outcome": "rejected"
     },
     "Benetics AI": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-05-18", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-05-18",
+          "confirmed": true
+        }
       ],
       "outcome": "rejected"
     },
     "Sygnum Bank": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-06-05", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-06-05",
+          "confirmed": true
+        }
       ],
       "outcome": "active"
     },
     "Founderful": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-06-09", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-06-09",
+          "confirmed": true
+        }
       ],
       "outcome": "active"
     },
     "ELCA": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-06-19", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-06-19",
+          "confirmed": true
+        }
       ],
-      "outcome": "active"
+      "outcome": "rejected"
     },
     "Movec": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-06-30", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-06-30",
+          "confirmed": true
+        }
       ],
       "outcome": "active"
     },
-    "Brack": {
+    "BRACK": {
       "stage": "R1",
       "rounds": [
-        { "round": "R1", "date": "2026-07-03", "confirmed": true }
+        {
+          "round": "R1",
+          "date": "2026-07-03",
+          "confirmed": true
+        }
       ],
       "outcome": "active"
     }

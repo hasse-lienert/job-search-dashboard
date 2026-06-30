@@ -120,6 +120,17 @@
       ],
       "outcome": "active"
     },
+    "localsearch": {
+      "stage": "Take-home task",
+      "rounds": [
+        {
+          "round": "Take-home",
+          "date": "2026-06-15",
+          "confirmed": true
+        }
+      ],
+      "outcome": "active"
+    },
     "BRACK": {
       "stage": "R1",
       "rounds": [

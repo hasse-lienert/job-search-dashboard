@@ -691,7 +691,11 @@ function renderTable() {
   });
 
   document.getElementById('tbody').innerHTML = sorted.map(r => {
-    const stage    = stages[r.company]?.stage || '';
+    // A stage entry may pin to a specific role, so a second application to the
+    // same company doesn't inherit the tag. No role = matches any row (back-compat).
+    const stageEntry = stages[r.company];
+    const stage = stageEntry && (!stageEntry.role || stageEntry.role === r.role)
+      ? stageEntry.stage : '';
     const roleCell = r.jd_url
       ? `<a href="${escHtml(r.jd_url)}" target="_blank" rel="noopener">${escHtml(r.role)}</a>`
       : escHtml(r.role);

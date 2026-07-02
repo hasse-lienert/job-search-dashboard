@@ -74,7 +74,8 @@
           "confirmed": true
         }
       ],
-      "outcome": "rejected"
+      "outcome": "rejected",
+      "role": "Product Manager"
     },
     "Sygnum Bank": {
       "stage": "R1",
@@ -121,15 +122,16 @@
       "outcome": "active"
     },
     "localsearch": {
-      "stage": "Take-home task",
+      "stage": "R1",
       "rounds": [
         {
-          "round": "Take-home",
+          "round": "R1",
           "date": "2026-06-15",
           "confirmed": true
         }
       ],
-      "outcome": "active"
+      "outcome": "active",
+      "role": "Senior Product Owner AI Sales Agent / Sales-Tools"
     },
     "BRACK": {
       "stage": "R1",

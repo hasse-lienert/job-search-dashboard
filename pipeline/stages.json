@@ -139,12 +139,17 @@
       "role": "Senior Product Owner AI Sales Agent / Sales-Tools"
     },
     "BRACK": {
-      "stage": "R1",
+      "stage": "R2",
       "rounds": [
         {
           "round": "R1",
           "date": "2026-07-03",
           "confirmed": true
+        },
+        {
+          "round": "R2",
+          "date": "TBD",
+          "confirmed": false
         }
       ],
       "outcome": "active"

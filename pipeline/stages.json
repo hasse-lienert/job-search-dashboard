@@ -135,7 +135,7 @@
           "confirmed": true
         }
       ],
-      "outcome": "active",
+      "outcome": "rejected",
       "role": "Senior Product Owner AI Sales Agent / Sales-Tools"
     },
     "BRACK": {
@@ -148,7 +148,7 @@
         },
         {
           "round": "R2",
-          "date": "TBD",
+          "date": "2026-07-14",
           "confirmed": false
         }
       ],
@@ -160,7 +160,7 @@
       "outcome": "active",
       "role": "Product Manager (f/m/d) 100%"
     },
-    "HCLTech": {
+    "HCL": {
       "stage": "Referral",
       "rounds": [],
       "outcome": "active",

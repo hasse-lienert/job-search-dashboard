@@ -153,23 +153,6 @@
         }
       ],
       "outcome": "active"
-    },
-    "Luware": {
-      "stage": "Applied",
-      "rounds": [],
-      "outcome": "active",
-      "role": "Product Manager (f/m/d) 100%"
-    },
-    "HCL": {
-      "stage": "Referral",
-      "rounds": [],
-      "outcome": "active",
-      "role": "AI Product Manager (Zurich, on-site, 8-15 yrs)"
-    },
-    "Cargoo": {
-      "stage": "Applied",
-      "rounds": [],
-      "outcome": "active"
     }
   }
 }

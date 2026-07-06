@@ -487,15 +487,18 @@ function render() {
   }
   document.getElementById('s-streak').textContent = streak + (streak === 1 ? ' wk' : ' wks');
 
-  // Interview rate — only count stage entries that match an actual Sheet row,
-  // so the rate stays consistent with the table badges. Warn on mismatches
-  // (usually a key typo, e.g. "Sygnum" vs "Sygnum Bank").
+  // Interview rate — only count stage entries that (a) match an actual Sheet row
+  // and (b) represent a real interview round (R1+). A non-round stage like
+  // "Applied" or "Referral" is not a conversation and must not inflate the rate.
+  // Warn on Sheet mismatches (usually a key typo, e.g. "Sygnum" vs "Sygnum Bank").
   const matchedStages = Object.keys(stages).filter(name => {
     const matched = rows.some(r => r.company === name);
     if (!matched) console.warn(`stages.json company "${name}" matches no Sheet row — key typo?`);
     return matched;
   });
-  const progressed = matchedStages.length;
+  const progressed = matchedStages.filter(name =>
+    STAGE_RANK[(stages[name].stage || '').toLowerCase()]
+  ).length;
   const rate = total > 0 ? Math.round((progressed / total) * 100) : 0;
   document.getElementById('s-rate').textContent    = rate + '%';
   document.getElementById('s-rate-sub').textContent =
@@ -693,9 +696,11 @@ function renderTable() {
   document.getElementById('tbody').innerHTML = sorted.map(r => {
     // A stage entry may pin to a specific role, so a second application to the
     // same company doesn't inherit the tag. No role = matches any row (back-compat).
+    // Only badge real interview rounds (R1+) — never a stray "Applied"/"Referral".
     const stageEntry = stages[r.company];
-    const stage = stageEntry && (!stageEntry.role || stageEntry.role === r.role)
+    const rawStage = stageEntry && (!stageEntry.role || stageEntry.role === r.role)
       ? stageEntry.stage : '';
+    const stage = STAGE_RANK[(rawStage || '').toLowerCase()] ? rawStage : '';
     const roleCell = r.jd_url
       ? `<a href="${escHtml(r.jd_url)}" target="_blank" rel="noopener">${escHtml(r.role)}</a>`
       : escHtml(r.role);

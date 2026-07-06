@@ -148,8 +148,8 @@
         },
         {
           "round": "R2",
-          "date": "2026-07-14",
-          "confirmed": false
+          "date": "2026-07-17",
+          "confirmed": true
         }
       ],
       "outcome": "active"

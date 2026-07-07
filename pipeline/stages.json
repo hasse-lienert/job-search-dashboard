@@ -78,7 +78,7 @@
       "role": "Product Manager"
     },
     "Sygnum Bank": {
-      "stage": "R2",
+      "stage": "R3",
       "rounds": [
         {
           "round": "R1",
@@ -88,6 +88,11 @@
         {
           "round": "R2",
           "date": "2026-07-07",
+          "confirmed": true
+        },
+        {
+          "round": "R3",
+          "date": "2026-07-09",
           "confirmed": true
         }
       ],

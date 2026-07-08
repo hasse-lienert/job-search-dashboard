@@ -25,6 +25,10 @@
       "outcome": "rejected",
       "role": "Product Manager"
     },
+    "Sygnum Bank": {
+      "stage": "R4",
+      "outcome": "active"
+    },
     "Founderful": {
       "stage": "R1",
       "outcome": "active"

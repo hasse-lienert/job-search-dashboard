@@ -2,191 +2,49 @@
   "companies": {
     "Twint": {
       "stage": "R1",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-02-26",
-          "confirmed": true
-        }
-      ],
       "outcome": "rejected"
     },
     "Generali": {
       "stage": "R1",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-03-17",
-          "confirmed": true
-        }
-      ],
       "outcome": "rejected"
     },
     "Advertima": {
       "stage": "R1",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-04-02",
-          "confirmed": true
-        }
-      ],
       "outcome": "withdrawn"
     },
     "Wonderful AI": {
       "stage": "R3",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-04-22",
-          "confirmed": true
-        },
-        {
-          "round": "R2",
-          "date": "2026-05-05",
-          "confirmed": true
-        },
-        {
-          "round": "R3",
-          "date": "2026-05-11",
-          "confirmed": true
-        }
-      ],
       "outcome": "rejected"
     },
     "Entyre Group": {
       "stage": "R1",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-05-12",
-          "confirmed": true
-        }
-      ],
       "outcome": "rejected"
     },
     "Benetics AI": {
       "stage": "R1",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-05-18",
-          "confirmed": true
-        }
-      ],
       "outcome": "rejected",
       "role": "Product Manager"
     },
-    "Sygnum Bank": {
-      "stage": "R4",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-06-05",
-          "confirmed": true
-        },
-        {
-          "round": "R2",
-          "date": "2026-07-07",
-          "confirmed": true
-        },
-        {
-          "round": "R3",
-          "date": "2026-07-09",
-          "confirmed": true
-        },
-        {
-          "round": "R4",
-          "date": "2026-07-13",
-          "confirmed": true
-        }
-      ],
-      "outcome": "active"
-    },
     "Founderful": {
       "stage": "R1",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-06-09",
-          "confirmed": true
-        }
-      ],
       "outcome": "active"
     },
     "ELCA": {
       "stage": "R1",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-06-19",
-          "confirmed": true
-        }
-      ],
       "outcome": "rejected"
     },
     "Movec": {
       "stage": "R1",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-06-30",
-          "confirmed": true
-        }
-      ],
       "outcome": "active"
     },
     "localsearch": {
       "stage": "R1",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-06-15",
-          "confirmed": true
-        }
-      ],
       "outcome": "rejected",
       "role": "Senior Product Owner AI Sales Agent / Sales-Tools"
     },
     "BRACK": {
       "stage": "R2",
-      "rounds": [
-        {
-          "round": "R1",
-          "date": "2026-07-03",
-          "confirmed": true
-        },
-        {
-          "round": "R2",
-          "date": "2026-07-17",
-          "confirmed": true
-        }
-      ],
       "outcome": "active"
-    },
-    "DeepJudge": {
-      "stage": "Applied",
-      "rounds": [
-        {
-          "round": "Application",
-          "date": "2026-07-08",
-          "confirmed": true
-        }
-      ],
-      "outcome": "active",
-      "role": "Open / General Application (Product)"
-    },
-    "evulpo": {
-      "stage": "Applied",
-      "rounds": [
-        {
-          "round": "Application",
-          "date": "2026-07-08",
-          "confirmed": true
-        }
-      ],
-      "outcome": "active",
-      "role": "Spontaneous Application (Product Manager)"
     }
   }
 }

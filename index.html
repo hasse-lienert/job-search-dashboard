@@ -322,7 +322,14 @@ const COL = {
   salary:  'Requested salary',
 };
 
-const STAGE_RANK = { r1: 1, r2: 2, r3: 3, offer: 4 };
+// Numeric rank of an interview round: R1->1, R2->2, … Rn->n; offer->high; else 0.
+// Round-number-agnostic so R4+ loops render correctly (badge, funnel, rate).
+function roundRank(stage) {
+  const s = String(stage || '').toLowerCase();
+  if (s === 'offer') return 100;
+  const m = s.match(/^r(\d+)$/);
+  return m ? parseInt(m[1], 10) : 0;
+}
 
 // Single source of truth for chart colors — keep in sync with the CSS :root vars
 const COLORS = {
@@ -497,7 +504,7 @@ function render() {
     return matched;
   });
   const progressed = matchedStages.filter(name =>
-    STAGE_RANK[(stages[name].stage || '').toLowerCase()]
+    roundRank(stages[name].stage)
   ).length;
   const rate = total > 0 ? Math.round((progressed / total) * 100) : 0;
   document.getElementById('s-rate').textContent    = rate + '%';
@@ -567,11 +574,11 @@ function renderFunnelChart(total) {
   const stageCounts = { Applied: total, R1: 0, R2: 0, R3: 0, Offer: 0 };
 
   Object.values(stages).forEach(co => {
-    const rank = STAGE_RANK[(co.stage || '').toLowerCase()] || 0;
+    const rank = roundRank(co.stage);
     if (rank >= 1) stageCounts.R1++;
     if (rank >= 2) stageCounts.R2++;
-    if (rank >= 3) stageCounts.R3++;
-    if (rank >= 4 || co.outcome === 'offer') stageCounts.Offer++;
+    if (rank >= 3) stageCounts.R3++;   // R4+ clears R3; funnel tops out at R3
+    if (co.outcome === 'offer' || String(co.stage).toLowerCase() === 'offer') stageCounts.Offer++;
   });
 
   const stageLabels = ['Applied', 'R1', 'R2', 'R3', 'Offer'];
@@ -700,7 +707,7 @@ function renderTable() {
     const stageEntry = stages[r.company];
     const rawStage = stageEntry && (!stageEntry.role || stageEntry.role === r.role)
       ? stageEntry.stage : '';
-    const stage = STAGE_RANK[(rawStage || '').toLowerCase()] ? rawStage : '';
+    const stage = roundRank(rawStage) ? rawStage : '';
     const roleCell = r.jd_url
       ? `<a href="${escHtml(r.jd_url)}" target="_blank" rel="noopener">${escHtml(r.role)}</a>`
       : escHtml(r.role);

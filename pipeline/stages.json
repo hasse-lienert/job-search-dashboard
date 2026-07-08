@@ -158,6 +158,18 @@
         }
       ],
       "outcome": "active"
+    },
+    "DeepJudge": {
+      "stage": "Applied",
+      "rounds": [
+        {
+          "round": "Application",
+          "date": "2026-07-08",
+          "confirmed": true
+        }
+      ],
+      "outcome": "active",
+      "role": "Open / General Application (Product)"
     }
   }
 }

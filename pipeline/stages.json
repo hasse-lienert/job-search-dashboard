@@ -170,6 +170,18 @@
       ],
       "outcome": "active",
       "role": "Open / General Application (Product)"
+    },
+    "evulpo": {
+      "stage": "Applied",
+      "rounds": [
+        {
+          "round": "Application",
+          "date": "2026-07-08",
+          "confirmed": true
+        }
+      ],
+      "outcome": "active",
+      "role": "Spontaneous Application (Product Manager)"
     }
   }
 }

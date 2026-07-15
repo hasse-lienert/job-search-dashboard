@@ -81,8 +81,8 @@
     .stat-value { font-size: 30px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
     .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
     .stat-sub   { font-size: 12px; color: var(--muted); }
-    .streak-val { color: var(--green); }
-    .rate-val   { color: var(--blue); }
+    .duration-val { color: var(--green); }
+    .rate-val     { color: var(--blue); }
 
     /* ── Chart row ── */
     .charts-row {
@@ -240,7 +240,7 @@
   <div class="card">
     <div class="stat-label">Total Applied</div>
     <div class="stat-value" id="s-total">—</div>
-    <div class="stat-sub" id="s-this-week">— this week</div>
+    <div class="stat-sub" id="s-last">—</div>
   </div>
   <div class="card">
     <div class="stat-label">Active</div>
@@ -248,9 +248,9 @@
     <div class="stat-sub" id="s-closed">— closed</div>
   </div>
   <div class="card">
-    <div class="stat-label">Weekly Streak</div>
-    <div class="stat-value streak-val" id="s-streak">—</div>
-    <div class="stat-sub">Weeks with ≥ 2 applications</div>
+    <div class="stat-label">Search Duration</div>
+    <div class="stat-value duration-val" id="s-duration">—</div>
+    <div class="stat-sub" id="s-duration-sub">First to last application</div>
   </div>
   <div class="card">
     <div class="stat-label">Interview Rate</div>
@@ -358,11 +358,11 @@ async function loadData() {
   document.body.classList.add('is-loading');
 
   // Skeleton stat values
-  ['s-total','s-active','s-streak','s-rate'].forEach(id => {
+  ['s-total','s-active','s-duration','s-rate'].forEach(id => {
     document.getElementById(id).innerHTML =
       '<span class="skeleton-block" style="width:48px">&nbsp;</span>';
   });
-  ['s-this-week','s-closed','s-rate-sub'].forEach(id => {
+  ['s-last','s-closed','s-rate-sub'].forEach(id => {
     document.getElementById(id).innerHTML =
       '<span class="skeleton-block" style="width:80px;height:0.85em">&nbsp;</span>';
   });
@@ -441,6 +441,10 @@ function currentCW() {
   return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 }
 
+function fmtDay(d) {
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+}
+
 function fmtSalary(n) {
   if (n === null || n === undefined) return '—';
   return 'CHF ' + Math.round(n) + 'k';
@@ -476,23 +480,25 @@ function render() {
   const total    = rows.length;
   const active   = rows.filter(r => r.status === 'applied').length;
   const closed   = rows.filter(r => r.status === 'declined' || r.status === 'pulled out').length;
-  const thisWeek = (byCW[cwNow]?.items || []).length;
 
   document.getElementById('s-total').textContent    = total;
   document.getElementById('s-active').textContent   = active;
   document.getElementById('s-closed').textContent   = `${closed} closed`;
-  document.getElementById('s-this-week').textContent =
-    `${thisWeek} this week (CW${cwNow})`;
 
-  // Streak: consecutive weeks (going back from current) with ≥ 2 applications
-  let streak = 0;
-  let w = cwNow;
-  while (w > 0) {
-    const count = (byCW[w]?.items || []).length;
-    if (count >= 2) { streak++; w--; }
-    else break;
+  // Search duration: span from first to last application (search concluded — a
+  // static retrospective, not a live streak). Last-applied date shown under Total.
+  const appDates = rows.map(r => r.date).filter(Boolean).sort();
+  if (appDates.length) {
+    const first = new Date(appDates[0]);
+    const last  = new Date(appDates[appDates.length - 1]);
+    const weeks = Math.max(1, Math.round((last - first) / (7 * 86400000)) + 1);
+    document.getElementById('s-duration').textContent = weeks + (weeks === 1 ? ' wk' : ' wks');
+    document.getElementById('s-duration-sub').textContent = `${fmtDay(first)} – ${fmtDay(last)}`;
+    document.getElementById('s-last').textContent = `Last applied ${fmtDay(last)}`;
+  } else {
+    document.getElementById('s-duration').textContent = '—';
+    document.getElementById('s-last').textContent = '—';
   }
-  document.getElementById('s-streak').textContent = streak + (streak === 1 ? ' wk' : ' wks');
 
   // Interview rate — only count stage entries that (a) match an actual Sheet row
   // and (b) represent a real interview round (R1+). A non-round stage like
@@ -518,13 +524,15 @@ function render() {
 }
 
 function renderWeeklyChart(sortedCWs, byCW, cwNow) {
-  // Fill range from first CW to current CW
-  const minCW = sortedCWs.length > 0 ? sortedCWs[0] : cwNow;
+  // Range: first to LAST application week (search concluded). Internal gap weeks
+  // still show as 0-bars; we no longer trail empty weeks out to the current week.
+  const minCW = sortedCWs.length > 0 ? Math.min(...sortedCWs) : cwNow;
+  const maxCW = sortedCWs.length > 0 ? Math.max(...sortedCWs) : cwNow;
   const labels = [];
   const counts = [];
   const colors = [];
 
-  for (let w = minCW; w <= cwNow; w++) {
+  for (let w = minCW; w <= maxCW; w++) {
     const count = (byCW[w]?.items || []).length;
     labels.push('CW ' + w);
     counts.push(count);

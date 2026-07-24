@@ -230,7 +230,6 @@
     <h1>Job Search Dashboard</h1>
     <div id="meta">Loading…</div>
   </div>
-  <button id="refresh-btn" onclick="loadData()">↻ Refresh</button>
 </header>
 
 <div id="error-banner"></div>
@@ -307,10 +306,13 @@
 </div>
 
 <script>
-const SCRIPT_URL  = '/api/data';
+// ── FROZEN SNAPSHOT ── job search concluded 2026-07-24 ──
+// Static retrospective: no live data source. One-time snapshot of the Sheet +
+// interview stages; the salary column is intentionally omitted from the page.
 const SHOW_SALARY = new URLSearchParams(window.location.search).has('salary');
-
-const STAGES_URL = '/pipeline/stages.json';
+const SNAPSHOT_META = 'Final snapshot · 24 Jul 2026';
+const SNAPSHOT_SHEET = {"headers":["Company","Job","Applied on","Status","Kalenderwoche"],"data":[{"Company":"ZKB","Job":"Produktmanager Twint","Applied on":"2026-02-12","Status":"Declined","Kalenderwoche":7,"jd_url":"https://apply.refline.ch/792841/11008/0u3HS.DK-hBQWecvEm4.BffhNag65CxUB8m3x2i-qp-9inofUcmAz0/apply"},{"Company":"Twint","Job":"Lead PM Payment","Applied on":"2026-02-12","Status":"Declined","Kalenderwoche":7,"jd_url":"https://www.linkedin.com/jobs/view/4354490226/"},{"Company":"Viseca","Job":"(Senior) Product Manager","Applied on":"2026-02-16","Status":"Declined","Kalenderwoche":8,"jd_url":"https://jobs.viseca.ch/Senior-Product-Manager-80-100-de-j1383.html"},{"Company":"grape","Job":"Product Manager","Applied on":"2026-02-16","Status":"Declined","Kalenderwoche":8,"jd_url":"https://jobs.eu.lever.co/grape-health/afefff13-8263-427d-9295-338dac2f1aa4/apply?lever-source=LinkedIn"},{"Company":"Sanitas","Job":"Product Owner / Projectmanager Workflow Automation","Applied on":"2026-02-23","Status":"Declined","Kalenderwoche":9,"jd_url":"https://jobs.sanitas.com/offene-stellen/product-owner-projectmanager-workflow-automation-w-m-d-zuerich-hybrid/2c71cc13-eb36-40f7-94b7-6a0083d5ee1b"},{"Company":"Swisscom","Job":"Product Manager - Data & AI","Applied on":"2026-02-25","Status":"Declined ","Kalenderwoche":9,"jd_url":"https://swisscom.wd103.myworkdayjobs.com/SwisscomExternalCareers/job/Zurich/Product-Manager-Data---AI_R-0004838-1"},{"Company":"Post","Job":"Project Manager:in & Business Owner:in","Applied on":"2026-02-27","Status":"Declined","Kalenderwoche":9,"jd_url":"https://job.post.ch/v2/offene-stellen/project-manager-in-business-owner-in/c6948a1b-ca47-41cf-b592-504f26d8caca"},{"Company":"Google","Job":"Product Manager I, YouTube Shopping Consumer Growth","Applied on":"2026-03-02","Status":"Applied","Kalenderwoche":10,"jd_url":"https://www.google.com/about/careers/applications/jobs/results/129888612983415494-product-manager-i-youtube-shopping-consumer-growth"},{"Company":"On Running","Job":"Senior Technology Product Manager (Athlete Programs)","Applied on":"2026-03-04","Status":"Declined","Kalenderwoche":10,"jd_url":"https://culture.on.com/jobs/7622411/"},{"Company":"Generali","Job":"Teamleiter KMU Produkt und Business Entwicklung","Applied on":"2026-03-05","Status":"Declined","Kalenderwoche":10,"jd_url":"https://jobs.generali.ch/offene-stellen/teamleiter-kmu-produkt-und-business-entwicklung-m-w-d/55715cf8-2784-40f3-b0d5-0aba7cf682a9"},{"Company":"Computershare","Job":"Product Manager Banking","Applied on":"2026-03-08","Status":"Applied","Kalenderwoche":11,"jd_url":"https://fa-evdq-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/de/sites/CX_2001/jobs/preview/9208"},{"Company":"Nordwand Gruppe","Job":"Product Manager Software Solutions inhouse","Applied on":"2026-03-11","Status":"Declined","Kalenderwoche":11,"jd_url":"https://www.linkedin.com/jobs/view/4375571377/"},{"Company":"Sunrise","Job":"(SENIOR) PRODUCT MANAGER SWYPE 80-100%","Applied on":"2026-03-12","Status":"Declined","Kalenderwoche":11,"jd_url":"https://careers.sunrise.ch/de/de/job/REQ_30036348"},{"Company":"Pragmatica","Job":"Lead Digitalisierung Kredite & Hypotheken","Applied on":"2026-03-13","Status":"Applied","Kalenderwoche":11,"jd_url":"https://www.pragmatica.ch/wp-content/plugins/bullhorn-oscp/#/jobs/1918"},{"Company":"expert group ag","Job":"API Product Manager","Applied on":"2026-03-13","Status":"Applied","Kalenderwoche":11,"jd_url":"https://talents.studysmarter.de/companies/expert-group-ag/api-product-manager-roadmap-design-integrations-29596708/"},{"Company":"On Running","Job":"Head of Product Management, Product/R&D","Applied on":"2026-03-16","Status":"Declined","Kalenderwoche":12,"jd_url":"https://culture.on.com/jobs/7217836/"},{"Company":"Smartcat","Job":"Senior Product Manager","Applied on":"2026-03-17","Status":"Applied","Kalenderwoche":12,"jd_url":"https://www.smartcat.com/career/?gh_jid=5753685004"},{"Company":"Crypto Finance AG","Job":"Product Manager - Trading Front Office Systems","Applied on":"2026-03-18","Status":"Applied ","Kalenderwoche":12,"jd_url":"https://apply.workable.com/crypto-finance/j/EB364176C4/"},{"Company":"Open Systems","Job":"Senior Product Manager SD-WAN","Applied on":"2026-03-19","Status":"Declined","Kalenderwoche":12,"jd_url":"https://opench.bamboohr.com/careers/784"},{"Company":"Benetics AI","Job":"Head of Go-to-Market & Demand Gen","Applied on":"2026-03-20","Status":"Applied ","Kalenderwoche":12,"jd_url":"https://join.com/companies/benetics/15835611-head-of-go-to-market-and-demand-gen"},{"Company":"Coders Connect","Job":"Product Owner","Applied on":"2026-03-23","Status":"Applied","Kalenderwoche":13,"jd_url":"https://www.jobin.cloud/careers/610063348f511000137a5707/jobs/6981c0a02b8fe8d57215e14e"},{"Company":"Advertima","Job":"Senior PM, AdTech","Applied on":"2026-03-28","Status":"Pulled out","Kalenderwoche":13,"jd_url":"https://advertimavisionag.applytojob.com/apply/1ar0cZ7PTY/Senior-Product-Manager-AdTech"},{"Company":"Wonderful AI","Job":"Deployment Strategist","Applied on":"2026-04-16","Status":"Declined","Kalenderwoche":16},{"Company":"Cobaltix","Job":"Initiativbewerbung","Applied on":"2026-04-20","Status":"Applied","Kalenderwoche":17},{"Company":"Linear","Job":"PM","Applied on":"2026-04-22","Status":"Declined","Kalenderwoche":17,"jd_url":"https://jobs.ashbyhq.com/linear/86abcce0-04b2-405c-9a8e-e0ca84813914"},{"Company":"Unique","Job":"Product Manager","Applied on":"2026-04-27","Status":"Declined","Kalenderwoche":18,"jd_url":"https://unique.careers.hibob.com/jobs/9fbbe1ff-a893-46a7-ab49-f1a57325468c"},{"Company":"Migros","Job":"Product Manager Pricing, Aktions- und Sortimentsoptimierung","Applied on":"2026-04-29","Status":"Declined","Kalenderwoche":18,"jd_url":"https://jobs.migros.ch/de/unsere-unternehmen/job/migros-supermarkt-ag/product-manager-pricing-aktions-und-sortimentsoptimierung-wmd/d4374350-c953-4da4-9d29-6d235828992e?srcText=job_channel_ch"},{"Company":"EF","Job":"Product Manager - In-Class Experience","Applied on":"2026-05-01","Status":"Applied","Kalenderwoche":18,"jd_url":"https://jobs.ef.com/en/sites/ef/job/1643"},{"Company":"asparaa","Job":"Product Manager AI B2B SaaS","Applied on":"2026-05-04","Status":"Declined","Kalenderwoche":19,"jd_url":"https://join.com/companies/aspaara/16051669-product-manager-ai-b2b-saas?pid=eb49d6ed11b80d4b5f18"},{"Company":"Entyre Group","Job":"Head of Revenue Operations","Applied on":"2026-05-06","Status":"Declined","Kalenderwoche":19,"jd_url":"https://entyre.recruitee.com/o/head-of-revenue-operations"},{"Company":"UBS","Job":"AI Product Manager – Wealth Management Focus","Applied on":"2026-05-08","Status":"Declined","Kalenderwoche":19,"jd_url":"https://jobs.ubs.com/TGnewUI/Search/home/HomeWithPreLoad?PageType=JobDetails&partnerid=25008&siteid=5012&jobId=344790&codes=ILINKEDIN#jobDetails=344790_5012"},{"Company":"LatticeFlow AI","Job":"Product Manager","Applied on":"2026-05-11","Status":"Declined","Kalenderwoche":20,"jd_url":"https://jobs.workable.com/view/cQd5Fzxm7knGKHVkKy2QDd/product-manager-in-z%C3%BCrich-at-latticeflow-ai"},{"Company":"Benetics AI","Job":"Product Manager","Applied on":"2026-05-12","Status":"Declined","Kalenderwoche":20,"jd_url":"https://join.com/companies/benetics/16144249-product-manager"},{"Company":"Comparis","Job":"Product Manager Automotive Marketplace","Applied on":"2026-05-18","Status":"Declined","Kalenderwoche":21,"jd_url":"https://www.comparis.ch/people/jobs/detail/2626224"},{"Company":"Bug Bounty","Job":"Product Manager","Applied on":"2026-05-20","Status":"Declined","Kalenderwoche":21,"jd_url":"https://cyberresilienceshield.com/careers?ashby_jid=206d7d1a-5c35-44f1-971f-d05d9f428219"},{"Company":"Taurus","Job":"Product Manager","Applied on":"2026-05-21","Status":"Declined","Kalenderwoche":21,"jd_url":"https://join.com/companies/taurusgroup/16150706-product-manager-lausanne-geneva-zurich?pid=eb49d6ed11b80d4b5f18"},{"Company":"Fundamental","Job":"Product Manager","Applied on":"2026-05-25","Status":"Declined","Kalenderwoche":22,"jd_url":"https://jobs.ashbyhq.com/fundamental/b4d8fbb0-71b4-415e-98a4-729d4ea092e0"},{"Company":"Arqh","Job":"Spontaneous Application","Applied on":"2026-05-27","Status":"Applied","Kalenderwoche":22,"jd_url":"https://careers.arqh.ai/jobs/7198131-spontaneous-application"},{"Company":"Founderful","Job":"Talent pool application","Applied on":"2026-05-27","Status":"Applied","Kalenderwoche":22},{"Company":"Lightly","Job":"Generalist AI Trainer at AI Startup","Applied on":"2026-05-27","Status":"Applied","Kalenderwoche":22},{"Company":"Dash0","Job":"Principal Product Manager","Applied on":"2026-05-29","Status":"Declined","Kalenderwoche":22,"jd_url":"https://jobs.ashbyhq.com/dash0/8cc94c2e-16eb-4d19-af81-ddad97b14ce7"},{"Company":"Destinus","Job":"PLM Product Owner","Applied on":"2026-06-01","Status":"Applied","Kalenderwoche":23,"jd_url":"https://apply.workable.com/destinusgroup/j/D67A33C3F9/"},{"Company":"SwissRe","Job":"Head of Operational Model Excellence, Credit & Surety","Applied on":"2026-06-01","Status":"Declined","Kalenderwoche":23,"jd_url":"https://www.swissre.com/careers/job/Head-of-Operational-Model-Excellence-Credit-and-Surety-Hybrid-m-f-x-d-80-100-/1396554133"},{"Company":"Sygnum Bank","Job":"Product Manager – Core Platforms International","Applied on":"2026-06-01","Status":"Applied","Kalenderwoche":23,"jd_url":"https://sygnumpeopleportal.my.salesforce-sites.com/recruit/fRecruit__ApplyJob?vacancyNo=VN248"},{"Company":"UMB AG","Job":"Senior Product Manager","Applied on":"2026-06-03","Status":"Declined","Kalenderwoche":23,"jd_url":"https://jobs.smartrecruiters.com/UMBAG1/744000126006269-senior-product-manager"},{"Company":"localsearch","Job":"Senior Product Owner AI Sales Agent / Sales-Tools","Applied on":"2026-06-03","Status":"Declined","Kalenderwoche":23,"jd_url":"https://emp.jobylon.com/jobs/364077-localsearch-senior-product-owner-ai-sales-agent-sales-tools-100/"},{"Company":"Movec","Job":"Initiativbewerbung","Applied on":"2026-06-04","Status":"Applied","Kalenderwoche":23},{"Company":"redalpine","Job":"Talent pool application","Applied on":"2026-06-05","Status":"Applied","Kalenderwoche":23},{"Company":"Swisscom Ventures","Job":"Talent pool application","Applied on":"2026-06-05","Status":"Applied","Kalenderwoche":23},{"Company":"avaloq","Job":"Commercial Product Manager","Applied on":"2026-06-08","Status":"Applied","Kalenderwoche":24,"jd_url":"https://www.avaloq.com/careers/job-openings/commercial-product-manager-zurich-744000122702969"},{"Company":"USZ","Job":"PO Cloud Plattform","Applied on":"2026-06-08","Status":"Declined","Kalenderwoche":24,"jd_url":"https://ictjobs.ch/system-netzwerktechnik-security-voip/product-owner-w-m-d-cloud-platform-80-100/#content"},{"Company":"tenity","Job":"Talent pool application","Applied on":"2026-06-08","Status":"Applied","Kalenderwoche":24},{"Company":"Digital asset","Job":"Product Manager Financial Apps","Applied on":"2026-06-10","Status":"Applied","Kalenderwoche":24,"jd_url":"https://digitalasset.careers.hibob.com/jobs/bf0d9b33-53e1-4813-baad-d5557d7fc54a"},{"Company":"Medbase","Job":"Senior Product Manager Digital Health","Applied on":"2026-06-10","Status":"Declined","Kalenderwoche":24,"jd_url":"https://wd502.myworkdaysite.com/de-CH/recruiting/medbase/Medbase_jobs/job/Senior-Product-Manager-Digital-Health--a--80-100-_JR06925"},{"Company":"PEAX AG","Job":"Senior Product Manager","Applied on":"2026-06-11","Status":"Declined","Kalenderwoche":24,"jd_url":"https://www.indeed.com/viewjob?jk=0ec709e908a0f9f1&from=comp-individual-job"},{"Company":"a16z","Job":"Talent pool application","Applied on":"2026-06-15","Status":"Applied","Kalenderwoche":25},{"Company":"ELCA","Job":"Initiativbewerbung","Applied on":"2026-06-16","Status":"Declined","Kalenderwoche":25},{"Company":"anapaya","Job":"Head of Product","Applied on":"2026-06-17","Status":"Applied","Kalenderwoche":25,"jd_url":"https://anapaya.bamboohr.com/careers/72?source=aWQ9MjE%3D"},{"Company":"BRACK","Job":"Product Manager People & Culture","Applied on":"2026-06-18","Status":"Applied","Kalenderwoche":25,"jd_url":"https://jobs.brackalltron.ch/offene-stellen/product-manager-people-culture/ab82d6f5-4c71-4deb-b787-694fe1cd7bd5"},{"Company":"SwissRe","Job":"Transformation Delivery Lead","Applied on":"2026-06-18","Status":"Declined","Kalenderwoche":25,"jd_url":"https://www.swissre.com/careers/job/Transformation-Delivery-Lead-Hybrid-m-f-x-d-80-100-/1399908533"},{"Company":"Remote","Job":"Senior Product Manager Fraud and Compliance","Applied on":"2026-06-22","Status":"Declined","Kalenderwoche":26,"jd_url":"https://job-boards.greenhouse.io/remotecom/jobs/7748016003"},{"Company":"Nordwand Gruppe","Job":"Product Manager Software Solutions inhouse","Applied on":"2026-06-24","Status":"Declined","Kalenderwoche":26,"jd_url":"https://www.nordwandgroup.com/en/job-details/ProductManagerSoftwareSolutionsinhousea.html"},{"Company":"CISTEC","Job":"Product Manager PDMS","Applied on":"2026-06-25","Status":"Declined","Kalenderwoche":26,"jd_url":"https://www.cistec.com/product-managerin-pdms-80-100/"},{"Company":"Google","Job":"Group Product Manager, Consumer Shopping","Applied on":"2026-06-29","Status":"Applied","Kalenderwoche":27,"jd_url":"https://www.google.com/about/careers/applications/jobs/results/74156499512763078"},{"Company":"BLP Digital","Job":"Chief of Staff to CTO","Applied on":"2026-07-01","Status":"Declined","Kalenderwoche":27,"jd_url":"https://blp.digital/careers?ashby_jid=0da3c402-477c-45f5-b66f-453a6721afeb#open-roles"},{"Company":"Cerrion","Job":"AI Deployment Manager","Applied on":"2026-07-01","Status":"Applied","Kalenderwoche":27,"jd_url":"https://app.dover.com/apply/Cerrion/9df294fd-9fad-4933-abac-33fee03cfd42/?rs=76643084"},{"Company":"Valora Digital","Job":"Product & Project Manager - Group Products","Applied on":"2026-07-01","Status":"Declined","Kalenderwoche":27,"jd_url":"https://career.valora.com/de/job/5993/product-project-manager-group-products"},{"Company":"Luware","Job":"Product Manager","Applied on":"2026-07-03","Status":"Declined","Kalenderwoche":27,"jd_url":"https://luware.factorialhr.com/job_posting/product-manager-f-m-d-100-310641"},{"Company":"HCL","Job":"AI Product Manager","Applied on":"2026-07-03","Status":"Declined","Kalenderwoche":27,"jd_url":"https://careers.hcltech.com/job/AI-Product-Manager-I/117133-en_US"},{"Company":"Cargoo","Job":"Product Manager","Applied on":"2026-07-06","Status":"Applied","Kalenderwoche":28,"jd_url":"https://job-boards.eu.greenhouse.io/cargoo/jobs/4750270101"},{"Company":"DeepJudge","Job":"Open Application","Applied on":"2026-07-08","Status":"Applied","Kalenderwoche":28,"jd_url":"https://jobs.ashbyhq.com/deepjudge/39a91e45-8280-4b62-9a78-f33032de439f"},{"Company":"evulpo","Job":"Spontaneous Application","Applied on":"2026-07-08","Status":"Applied","Kalenderwoche":28,"jd_url":"https://evulpo.jobs.personio.com/job/2578979"},{"Company":"Jua","Job":"Chief of Staff","Applied on":"2026-07-10","Status":"Applied","Kalenderwoche":28,"jd_url":"https://jua.ai/careers/job?job_id=5648f293-592d-4423-89e8-16bf34d8ba0a"},{"Company":"teylor","Job":"Open application","Applied on":"2026-07-13","Status":"Applied","Kalenderwoche":29,"jd_url":"https://teylorag.careers.hibob.com/jobs?department=267172541"},{"Company":"UBS","Job":"https://jobs.ubs.com/TGnewUI/Search/home/HomeWithPreLoad?partnerid=25008&siteid=5012&PageType=searchResults&SearchType=linkquery&LinkID=15231#jobDetails=345737_5012","Applied on":"","Status":"","Kalenderwoche":52,"jd_url":"https://jobs.ubs.com/TGnewUI/Search/home/HomeWithPreLoad?partnerid=25008&siteid=5012&PageType=searchResults&SearchType=linkquery&LinkID=15231#jobDetails=345737_5012"},{"Company":"grape","Job":"https://jobs.eu.lever.co/grape-health/afefff13-8263-427d-9295-338dac2f1aa4","Applied on":"","Status":"","Kalenderwoche":52,"jd_url":"https://jobs.eu.lever.co/grape-health/afefff13-8263-427d-9295-338dac2f1aa4"}]};
+const SNAPSHOT_STAGES = {"Twint":{"stage":"R1","outcome":"rejected"},"Generali":{"stage":"R1","outcome":"rejected"},"Advertima":{"stage":"R1","outcome":"withdrawn"},"Wonderful AI":{"stage":"R3","outcome":"rejected"},"Entyre Group":{"stage":"R1","outcome":"rejected"},"Benetics AI":{"stage":"R1","outcome":"rejected","role":"Product Manager"},"Sygnum Bank":{"stage":"R4","outcome":"offer"},"Founderful":{"stage":"R1","outcome":"withdrawn"},"ELCA":{"stage":"R1","outcome":"rejected"},"Movec":{"stage":"R1","outcome":"withdrawn"},"localsearch":{"stage":"R1","outcome":"rejected","role":"Senior Product Owner AI Sales Agent / Sales-Tools"},"BRACK":{"stage":"R2","outcome":"withdrawn"}};
 
 // Column header names from your Sheet (row 1)
 const COL = {
@@ -348,74 +350,23 @@ let charts     = {};
 
 // ─── Data loading ─────────────────────────────────────────────────────────────
 
-async function loadData() {
-  const refreshBtn = document.getElementById('refresh-btn');
-  if (refreshBtn.disabled) return;
-  refreshBtn.disabled = true;
+function loadData() {
+  // Static retrospective — render directly from the embedded snapshot.
+  stages = SNAPSHOT_STAGES;
+  rows = SNAPSHOT_SHEET.data
+    .map(r => ({
+      company: String(r[COL.company] || '').trim(),
+      role:    String(r[COL.role]    || '').trim(),
+      jd_url:  /^https?:\/\//.test(r['jd_url'] || '') ? r['jd_url'] : null,
+      date:    String(r[COL.date]    || '').trim(),
+      status:  String(r[COL.status]  || '').toLowerCase().trim(),
+      cw:      parseCW(r[COL.cw]),
+      salary:  parseSalary(r[COL.salary]),
+    }))
+    .filter(r => r.company && r.date && r.status);
 
-  setMeta('Loading…');
-  hideError();
-  document.body.classList.add('is-loading');
-
-  // Skeleton stat values
-  ['s-total','s-active','s-duration','s-rate'].forEach(id => {
-    document.getElementById(id).innerHTML =
-      '<span class="skeleton-block" style="width:48px">&nbsp;</span>';
-  });
-  ['s-last','s-closed','s-rate-sub'].forEach(id => {
-    document.getElementById(id).innerHTML =
-      '<span class="skeleton-block" style="width:80px;height:0.85em">&nbsp;</span>';
-  });
-
-  // Skeleton table rows
-  const skRow = `<tr>${['90px','130px','75px','28px','60px'].map(w =>
-    `<td><span class="skeleton-block" style="width:${w}">&nbsp;</span></td>`
-  ).join('')}</tr>`;
-  document.getElementById('tbody').innerHTML = Array(5).fill(skRow).join('');
-
-  try {
-    // Sheet data is required — failure shows error banner
-    const res = await fetch(SCRIPT_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const sheet = await res.json();
-    if (sheet.error) throw new Error(sheet.error);
-
-    // Stages are optional — failure is non-fatal, just uses empty object
-    stages = {};
-    try {
-      const stagesRes = await fetch(STAGES_URL, { cache: 'no-store' });
-      if (stagesRes.ok) {
-        const stagesJson = await stagesRes.json();
-        stages = stagesJson.companies || {};
-      } else {
-        console.warn('stages.json returned', stagesRes.status);
-      }
-    } catch (e) {
-      console.warn('stages.json failed to load:', e.message);
-    }
-
-    rows = sheet.data
-      .map(r => ({
-        company: String(r[COL.company] || '').trim(),
-        role:    String(r[COL.role]    || '').trim(),
-        jd_url:  /^https?:\/\//.test(r['jd_url'] || '') ? r['jd_url'] : null,
-        date:    String(r[COL.date]    || '').trim(),
-        status:  String(r[COL.status]  || '').toLowerCase().trim(),
-        cw:      parseCW(r[COL.cw]),
-        salary:  parseSalary(r[COL.salary]),
-      }))
-      .filter(r => r.company && r.date && r.status);
-
-    render();
-    setMeta('Updated ' + new Date().toLocaleTimeString('de-CH'));
-  } catch (err) {
-    setMeta('Failed to load');
-    showError(err.message);
-    console.error(err);
-  } finally {
-    document.body.classList.remove('is-loading');
-    refreshBtn.disabled = false;
-  }
+  render();
+  setMeta(SNAPSHOT_META);
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

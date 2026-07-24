@@ -1,14 +1,5 @@
+# Static site — the dashboard is a frozen retrospective (job search concluded
+# 2026-07-24). All data is embedded in index.html; there is no serverless
+# function or API redirect anymore. Nothing to build, just publish the files.
 [build]
   publish = "."
-
-[build.environment]
-  NODE_VERSION = "18"
-
-# Route /api/data to the serverless function that proxies Apps Script.
-# The direct Netlify proxy redirect (status=200) doesn't work because Apps Script
-# uses a multi-step redirect chain that Netlify's proxy can't follow reliably.
-[[redirects]]
-  from   = "/api/data"
-  to     = "/.netlify/functions/data"
-  status = 200
-  force  = true
